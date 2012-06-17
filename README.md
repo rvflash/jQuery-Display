@@ -23,14 +23,14 @@ Attach events when the element enters, is displayed or exits of the current view
 
 And, two more attributes are available, one to specify that element is entirely displayed:
 
-    $("#myId")..display({
+    $("#myId").display({
         onExit : function (elem){ console.log($(elem).id + ' has been displayed'); },
         fully : true,
     });
 
 And the last to trigger events after time out: 
 
-    $("#myId")..display({
+    $("#myId").display({
         onEnter : function (elem){ console.log('... Hey!'); },
         latency : 1000,
     });
