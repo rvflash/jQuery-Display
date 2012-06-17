@@ -15,7 +15,7 @@ And, you can specify that the element must be completely displayed:
 
 Attach events when the element enters, is displayed or exits of the current view:
 
-    $("#myId")..display({
+    $("#myId").display({
         onEnter : function (elem){ console.log('Hello'); },
         onView : function (elem){ console.log('Yes, I am here!'); },
         onExit : function (elem){ console.log('Bye'); },
@@ -35,4 +35,4 @@ And the last to trigger events after time out:
         latency : 1000,
     });
 
-As you seene, the DOM element has been passed as first parameter on each method. 
+As you seen, the DOM element has been passed as first parameter on each method. 
