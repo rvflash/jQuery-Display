@@ -19,7 +19,7 @@
             var _self = this;
             var data = $.extend({
                 id : '_' + Math.floor((Math.random() * 1001) + 1),
-                displayed : false,
+                displayed : false
             }, $(_self).data('_display'));
 
             if (displayed(_self, settings.fully)) {
@@ -76,7 +76,7 @@
             onView : null,
             onExit : null,
             fully : false,
-            latency : 0,
+            latency : 0
         };
         var _self = this;
 
