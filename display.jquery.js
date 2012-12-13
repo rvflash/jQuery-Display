@@ -3,6 +3,7 @@
  * 
  * @desc Give various methods to known if one DOM element is currently displayed
  * @author Hervé GOUCHET
+ * @author Aurélie LE BOUGUENNEC
  * @requires jQuery 1.4.3+
  * @licenses Creative Commons BY-SA 2.0
  * @see https://github.com/rvflash/jQuery-Display
@@ -11,8 +12,10 @@
 (function($) {
     var timers = {};
 
-    var display = function(elem, settings) {
-        $(elem).each(function() {
+    var display = function(elem, settings)
+    {
+        $(elem).each(function()
+        {
             var _self = this;
             var data = $.extend({
                 id : '_' + Math.floor((Math.random() * 1001) + 1),
@@ -39,33 +42,35 @@
         });
     };
 
-    var displayed =
-            function(elem, fully) {
-                if ($(elem).is(':visible')) {
-                    var top = elem.offsetTop;
-                    var left = elem.offsetLeft;
-                    var width = elem.offsetWidth;
-                    var height = elem.offsetHeight;
+    var displayed = function(elem, fully)
+    {
+        if ($(elem).is(':visible')) {
+            var top = elem.offsetTop;
+            var left = elem.offsetLeft;
+            var width = elem.offsetWidth;
+            var height = elem.offsetHeight;
 
-                    while (elem.offsetParent) {
-                        elem = elem.offsetParent;
-                        top += elem.offsetTop;
-                        left += elem.offsetLeft;
-                    }
+            while (elem.offsetParent) {
+                elem = elem.offsetParent;
+                top += elem.offsetTop;
+                left += elem.offsetLeft;
+            }
 
-                    if ('undefined' == typeof (fully) || false == fully) {
-                        return (top < (window.pageYOffset + window.innerHeight)
-                                && left < (window.pageXOffset + window.innerWidth)
-                                && (top + height) > window.pageYOffset && (left + width) > window.pageXOffset);
-                    }
-                    return (top >= window.pageYOffset
-                            && left >= window.pageXOffset
-                            && (top + height) <= (window.pageYOffset + window.innerHeight) && (left + width) <= (window.pageXOffset + window.innerWidth));
-                }
-                return false;
-            };
+            if ('undefined' == typeof (fully) || false == fully) {
+                return (top < ($(window).scrollTop() + $(window).height()) && 
+                        left < ($(window).scrollLeft() + $(window).width()) && 
+                        (top + height) > $(window).scrollTop() && (left + width) > $(window).scrollLeft());
+            }
+            return (top >= $(window).scrollTop() &&
+                    left >= $(window).scrollLeft() &&
+                    (top + height) <= ($(window).scrollTop() + $(window).height()) &&
+                    (left + width) <= ($(window).scrollLeft() + $(window).width()));
+        }
+        return false;
+    };
 
-    $.fn.display = function(settings) {
+    $.fn.display = function(settings)
+    {
         var defaults = {
             onEnter : null,
             onView : null,
@@ -78,12 +83,12 @@
         $(window).scroll(function() {
             display(_self, $.extend({}, defaults, settings));
         });
-
         // Currently displayed
         $(window).scroll();
     };
 
-    $.expr[':'].display = function(elem, index, properties) {
+    $.expr[':'].display = function(elem, index, properties)
+    {
         var fully = (properties[3] && 'true' == properties[3] ? true : false);
         return displayed(elem, fully);
     };
