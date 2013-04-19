@@ -26,6 +26,8 @@
             if (displayed(_self, settings.fully)) {
                 if (false == data.displayed) {
                     if (false == data.seen) {
+                        timers[data.id] = {};
+
                         if ($.isFunction(settings.onOnce)) {
                             if ('onOnce' in timers[data.id]) {
                                 timers[data.id].onOnce.resume();
