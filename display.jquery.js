@@ -25,16 +25,29 @@
 
             if (displayed(_self, settings.fully)) {
                 if (false == data.displayed) {
+                    if (false == data.seen) {
+                        if ($.isFunction(settings.onOnce)) {
+                            if ('onOnce' in timers[data.id]) {
+                                timers[data.id].onOnce.resume();
+                            } else {
+                                timers[data.id].onOnce = timeOut(function()
+                                {
+                                    settings.onOnce(_self);
+                                }, settings.latency);
+                            }
+                        }
+                        data.seen = true;
+                    }
                     if ($.isFunction(settings.onEnter)) {
-                        timers[data.id] = setTimeout(function()
-                        {
-                            settings.onEnter(_self);
-                        }, settings.latency);
+                        if ('onEnter' in timers[data.id]) {
+                            timers[data.id].onEnter.resume();
+                        } else {
+                            timers[data.id].onEnter = timeOut(function()
+                            {
+                                settings.onEnter(_self);
+                            }, settings.latency);
+                        }
                     }
-                    if (false == data.seen && $.isFunction(settings.onOnce)) {
-                        settings.onOnce(_self);
-                    }
-                    data.seen = true;
                 }
                 data.displayed = true;
 
@@ -45,7 +58,9 @@
                 if ($.isFunction(settings.onExit)) {
                     settings.onExit(_self);
                 }
-                clearTimeout(timers[data.id]);
+                for (var timer in timers[data.id]) {
+                    timer.pause();
+                }
                 data.displayed = false;
             }
             $(_self).data('_display', data);
@@ -77,6 +92,25 @@
                     (left + width) <= ($(window).scrollLeft() + $(window).width()));
         }
         return false;
+    };
+
+    function timeOut(callback, delay)
+    {
+        var timerId, start, remaining = delay;
+
+        this.pause = function()
+        {
+            window.clearTimeout(timerId);
+            remaining -= new Date() - start;
+        };
+
+        this.resume = function()
+        {
+            start = new Date();
+            timerId = window.setTimeout(callback, remaining);
+        };
+
+        this.resume();
     };
 
     $.fn.display = function(settings)
