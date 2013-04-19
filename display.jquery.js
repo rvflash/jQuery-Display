@@ -30,10 +30,12 @@
                             if ('onOnce' in timers[data.id]) {
                                 timers[data.id].onOnce.resume();
                             } else {
-                                timers[data.id].onOnce = timeOut(function()
-                                {
-                                    settings.onOnce(_self);
-                                }, settings.latency);
+                                timers[data.id].onOnce = new Timer(
+                                    function()
+                                    {
+                                        settings.onOnce(_self);
+                                    }, settings.latency
+                                );
                             }
                         }
                         data.seen = true;
@@ -42,10 +44,12 @@
                         if ('onEnter' in timers[data.id]) {
                             timers[data.id].onEnter.resume();
                         } else {
-                            timers[data.id].onEnter = timeOut(function()
-                            {
-                                settings.onEnter(_self);
-                            }, settings.latency);
+                            timers[data.id].onEnter = new Timer(
+                                function()
+                                {
+                                    settings.onEnter(_self);
+                                }, settings.latency
+                            );
                         }
                     }
                 }
@@ -94,7 +98,7 @@
         return false;
     };
 
-    function timeOut(callback, delay)
+    function Timer(callback, delay)
     {
         var timerId, start, remaining = delay;
 
@@ -109,7 +113,6 @@
             start = new Date();
             timerId = window.setTimeout(callback, remaining);
         };
-
         this.resume();
     };
 
