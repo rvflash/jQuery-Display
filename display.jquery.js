@@ -19,18 +19,28 @@
             var _self = this;
             var data = $.extend({
                 id : '_' + Math.floor((Math.random() * 1001) + 1),
-                displayed : false
+                displayed : false,
+                seen : false
             }, $(_self).data('_display'));
 
             if (displayed(_self, settings.fully)) {
-                if (false == data.displayed && $.isFunction(settings.onEnter)) {
-                    timers[data.id] = setTimeout(function() {
-                        settings.onEnter(_self);
-                    }, settings.latency);
-                } else if ($.isFunction(settings.onView)) {
-                    settings.onView(_self);
+                if (false == data.displayed) {
+                    if ($.isFunction(settings.onEnter)) {
+                        timers[data.id] = setTimeout(function()
+                        {
+                            settings.onEnter(_self);
+                        }, settings.latency);
+                    }
+                    if (false == data.seen && $.isFunction(settings.onOnce)) {
+                        settings.onOnce(_self);
+                    }
+                    data.seen = true;
                 }
                 data.displayed = true;
+
+                if ($.isFunction(settings.onView)) {
+                    settings.onView(_self);
+                }
             } else if (data.displayed) {
                 if ($.isFunction(settings.onExit)) {
                     settings.onExit(_self);
@@ -73,6 +83,7 @@
     {
         var defaults = {
             onEnter : null,
+            onOnce : null,
             onView : null,
             onExit : null,
             fully : false,
