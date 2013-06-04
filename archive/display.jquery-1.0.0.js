@@ -1,27 +1,17 @@
 /**
  * jQuery Display plugin
- *
+ * 
  * @desc Give various methods to known if one DOM element is currently displayed
- * @version 1.1.0
  * @author Hervé GOUCHET
  * @author Aurélie LE BOUGUENNEC
  * @requires jQuery 1.4.3+
  * @licenses Creative Commons BY-SA 2.0
  * @see https://github.com/rvflash/jQuery-Display
+ * @version 1.0.0
  */
 ;
-(function($)
-{
-    var _timers = {};
-
-    var _defaults = {
-        onEnter : null,
-        onOnce : null,
-        onView : null,
-        onExit : null,
-        fully : false,
-        latency : 0
-    };
+(function($) {
+    var timers = {};
 
     var display = function(elem, settings)
     {
@@ -29,37 +19,35 @@
         {
             var _self = this;
             var data = $.extend({
-                id: '_' + Math.floor((Math.random() * 1001) + 1),
+                id : '_' + Math.floor((Math.random() * 1001) + 1),
                 displayed : false,
                 seen : false
             }, $(_self).data('_display'));
 
             if (displayed(_self, settings.fully)) {
-
                 if (false == data.displayed) {
-                    if ('undefined' == typeof _timers[data.id]) {
-                        _timers[data.id] = {};
-                    }
                     if (false == data.seen) {
+                        timers[data.id] = {};
+
                         if ($.isFunction(settings.onOnce)) {
-                            if ('onOnce' in _timers[data.id]) {
-                                _timers[data.id].onOnce.resume();
+                            if ('onOnce' in timers[data.id]) {
+                                timers[data.id].onOnce.resume();
                             } else {
-                                _timers[data.id].onOnce = new Timer(
+                                timers[data.id].onOnce = new Timer(
                                     function()
                                     {
                                         settings.onOnce(_self);
-                                        data.seen = true;
                                     }, settings.latency
                                 );
                             }
                         }
+                        data.seen = true;
                     }
-                    if ($.isFunction(settings.onEnter)) {
-                        if ('onEnter' in _timers[data.id]) {
-                            _timers[data.id].onEnter.resume();
+                    if ($.isFunction(settings.onEnter)) {
+                        if ('onEnter' in timers[data.id]) {
+                            timers[data.id].onEnter.resume();
                         } else {
-                            _timers[data.id].onEnter = new Timer(
+                            timers[data.id].onEnter = new Timer(
                                 function()
                                 {
                                     settings.onEnter(_self);
@@ -77,8 +65,8 @@
                 if ($.isFunction(settings.onExit)) {
                     settings.onExit(_self);
                 }
-                for (var timer in _timers[data.id]) {
-                    _timers[data.id][timer].pause();
+                for (var timer in timers[data.id]) {
+                    timer.pause();
                 }
                 data.displayed = false;
             }
@@ -101,14 +89,14 @@
             }
 
             if ('undefined' == typeof (fully) || false == fully) {
-                return (top < ($(window).scrollTop() + $(window).height()) &&
-                    left < ($(window).scrollLeft() + $(window).width()) &&
-                    (top + height) > $(window).scrollTop() && (left + width) > $(window).scrollLeft());
+                return (top < ($(window).scrollTop() + $(window).height()) && 
+                        left < ($(window).scrollLeft() + $(window).width()) && 
+                        (top + height) > $(window).scrollTop() && (left + width) > $(window).scrollLeft());
             }
             return (top >= $(window).scrollTop() &&
-                left >= $(window).scrollLeft() &&
-                (top + height) <= ($(window).scrollTop() + $(window).height()) &&
-                (left + width) <= ($(window).scrollLeft() + $(window).width()));
+                    left >= $(window).scrollLeft() &&
+                    (top + height) <= ($(window).scrollTop() + $(window).height()) &&
+                    (left + width) <= ($(window).scrollLeft() + $(window).width()));
         }
         return false;
     };
@@ -133,13 +121,21 @@
 
     $.fn.display = function(settings)
     {
+        var defaults = {
+            onEnter : null,
+            onOnce : null,
+            onView : null,
+            onExit : null,
+            fully : false,
+            latency : 0
+        };
         var _self = this;
-        var _options = $.extend({}, _defaults, settings);
 
-        setInterval(function()
-        {
-            display(_self, _options);
-        }, _options.latency);
+        $(window).scroll(function() {
+            display(_self, $.extend({}, defaults, settings));
+        });
+        // Currently displayed
+        $(window).scroll();
     };
 
     $.expr[':'].display = function(elem, index, properties)
